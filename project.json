@@ -1,0 +1,27 @@
+{
+  "overview": "Foodie is a full-stack food delivery web app with a Zomato/Swiggy-style design. Browse restaurants, explore menus, add items to cart, and checkout with Stripe — all with a sleek dark/light mode UI, order history, reviews, and an admin panel.",
+  "features": [
+    "Home page with hero, search, food categories, featured restaurants, and popular dishes",
+    "Restaurant listing with filter by category, rating, and search",
+    "Restaurant detail page with menu, add-to-cart, and customer reviews",
+    "Shopping cart with quantity controls and Stripe checkout",
+    "Internet Identity authentication and user profile with saved addresses",
+    "Order history with status tracking and reorder",
+    "Admin panel to manage restaurants, orders, and users",
+    "Dark/light mode toggle with persistent preference",
+    "Skeleton loading states and smooth animations",
+    "Responsive mobile-first design"
+  ],
+  "category": "food-delivery",
+  "tags": [
+    "food-delivery",
+    "restaurant",
+    "ordering",
+    "cart",
+    "stripe",
+    "admin-panel",
+    "dark-mode",
+    "responsive"
+  ],
+  "last_updated": "2026-04-09T17:14:21.094Z"
+}

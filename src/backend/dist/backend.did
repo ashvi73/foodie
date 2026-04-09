@@ -1,0 +1,288 @@
+type http_request_result = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type http_header = 
+ record {
+   name: text;
+   value: text;
+ };
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type UserProfileInput = 
+ record {
+   email: text;
+   name: text;
+   phone: text;
+ };
+type UserProfile = 
+ record {
+   createdAt: Timestamp;
+   email: text;
+   isAdmin: bool;
+   name: text;
+   phone: text;
+   savedAddresses: vec Address;
+ };
+type UserId = principal;
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec http_header;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: http_request_result;
+ };
+type Timestamp = int;
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type ReviewId = nat;
+type Review = 
+ record {
+   comment: text;
+   createdAt: Timestamp;
+   id: ReviewId;
+   rating: nat;
+   restaurantId: RestaurantId;
+   userId: UserId;
+   userName: text;
+ };
+type RestaurantRatingSummary = 
+ record {
+   averageRating: float64;
+   restaurantId: RestaurantId;
+   reviewCount: nat;
+ };
+type RestaurantInput = 
+ record {
+   address: text;
+   category: text;
+   deliveryFee: nat;
+   deliveryTimeMinutes: nat;
+   description: text;
+   imageBlob: opt ExternalBlob;
+   name: text;
+   phone: text;
+ };
+type RestaurantId = nat;
+type RestaurantFilter = 
+ record {
+   category: opt text;
+   minRating: opt float64;
+   searchTerm: opt text;
+ };
+type Restaurant = 
+ record {
+   address: text;
+   category: text;
+   createdAt: Timestamp;
+   deliveryFee: nat;
+   deliveryTimeMinutes: nat;
+   description: text;
+   id: RestaurantId;
+   imageBlob: opt ExternalBlob;
+   isActive: bool;
+   name: text;
+   phone: text;
+   rating: float64;
+   reviewCount: nat;
+ };
+type PlaceOrderInput = 
+ record {
+   deliveryAddress: text;
+   deliveryFee: nat;
+   items: vec OrderItem;
+   restaurantId: RestaurantId;
+   restaurantName: text;
+   specialInstructions: text;
+   subtotal: nat;
+   tax: nat;
+   total: nat;
+ };
+type OrderStatus = 
+ variant {
+   Cancelled;
+   Confirmed;
+   Delivered;
+   OutForDelivery;
+   Placed;
+   Preparing;
+ };
+type OrderItem = 
+ record {
+   menuItemId: MenuItemId;
+   name: text;
+   price: nat;
+   quantity: nat;
+ };
+type OrderId = nat;
+type Order = 
+ record {
+   createdAt: Timestamp;
+   deliveryAddress: text;
+   deliveryFee: nat;
+   id: OrderId;
+   items: vec OrderItem;
+   restaurantId: RestaurantId;
+   restaurantName: text;
+   specialInstructions: text;
+   status: OrderStatus;
+   subtotal: nat;
+   tax: nat;
+   total: nat;
+   updatedAt: Timestamp;
+   userId: UserId;
+ };
+type MenuItemInput = 
+ record {
+   category: text;
+   description: text;
+   imageBlob: opt ExternalBlob;
+   name: text;
+   price: nat;
+   restaurantId: RestaurantId;
+ };
+type MenuItemId = nat;
+type MenuItem = 
+ record {
+   category: text;
+   description: text;
+   id: MenuItemId;
+   imageBlob: opt ExternalBlob;
+   isAvailable: bool;
+   name: text;
+   price: nat;
+   restaurantId: RestaurantId;
+ };
+type ExternalBlob = blob;
+type CartItem = 
+ record {
+   menuItemId: MenuItemId;
+   name: text;
+   price: nat;
+   quantity: nat;
+   restaurantId: RestaurantId;
+ };
+type Cart = 
+ record {
+   items: vec CartItem;
+   userId: UserId;
+ };
+type Address = 
+ record {
+   city: text;
+   postalCode: text;
+   state: text;
+   street: text;
+   tag: text;
+ };
+type AddToCartInput = 
+ record {
+   menuItemId: MenuItemId;
+   name: text;
+   price: nat;
+   quantity: nat;
+   restaurantId: RestaurantId;
+ };
+type AddReviewInput = 
+ record {
+   comment: text;
+   rating: nat;
+   restaurantId: RestaurantId;
+   userName: text;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initializeAccessControl: () -> ();
+  addDeliveryAddress: (address: Address) -> ();
+  addMenuItem: (input: MenuItemInput) -> (MenuItemId);
+  addRestaurant: (input: RestaurantInput) -> (RestaurantId);
+  addReview: (input: AddReviewInput) -> (ReviewId);
+  addToCart: (input: AddToCartInput) -> ();
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  assignRole: (user: principal, role: UserRole) -> ();
+  clearCart: () -> ();
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  deleteMenuItem: (id: MenuItemId) -> ();
+  deleteRestaurant: (id: RestaurantId) -> ();
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getCallerUserRole: () -> (UserRole) query;
+  getCart: () -> (Cart) query;
+  getMenuItem: (id: MenuItemId) -> (opt MenuItem) query;
+  getOrder: (orderId: OrderId) -> (opt Order) query;
+  getRestaurant: (id: RestaurantId) -> (opt Restaurant) query;
+  getRestaurantRatingSummary: (restaurantId: RestaurantId) ->
+   (RestaurantRatingSummary) query;
+  getRestaurantReviews: (restaurantId: RestaurantId) -> (vec Review) query;
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  getUserProfile: (userId: UserId) -> (opt UserProfile) query;
+  isCallerAdmin: () -> (bool) query;
+  isStripeConfigured: () -> (bool) query;
+  listAllOrders: () -> (vec Order) query;
+  listMenuItems: (restaurantId: RestaurantId) -> (vec MenuItem) query;
+  listRestaurants: () -> (vec Restaurant) query;
+  listUserOrders: () -> (vec Order) query;
+  placeOrder: (input: PlaceOrderInput) -> (OrderId);
+  removeDeliveryAddress: (index: nat) -> ();
+  removeFromCart: (menuItemId: MenuItemId) -> ();
+  saveCallerUserProfile: (input: UserProfileInput) -> ();
+  searchRestaurants: (filter: RestaurantFilter) -> (vec Restaurant) query;
+  seedData: () -> ();
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  toggleRestaurantStatus: (id: RestaurantId) -> ();
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  updateCartItem: (menuItemId: MenuItemId, quantity: nat) -> ();
+  updateMenuItem: (id: MenuItemId, input: MenuItemInput) -> ();
+  updateOrderStatus: (orderId: OrderId, status: OrderStatus) -> ();
+  updateRestaurant: (id: RestaurantId, input: RestaurantInput) -> ();
+}
